@@ -8,8 +8,13 @@ namespace ClientSLL
 {
     class Program
     {
+        private const int PORT = 7777;
         static void Main(string[] args)
         {
+            ClientSLL client = new ClientSLL(PORT);
+            client.StartClient();
+
+            Console.ReadLine();
         }
     }
 }

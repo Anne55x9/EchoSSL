@@ -38,7 +38,7 @@ namespace EchoSSL
                 string message = sr.ReadLine();
                 string answer = "";
 
-                while (string.IsNullOrEmpty(message))
+                while (!string.IsNullOrEmpty(message))
                 {
                     Console.WriteLine("Client: " + message);
                     answer = message.ToUpper();

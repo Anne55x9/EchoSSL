@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F958906C-A977-41A0-857C-0CF824D2714B}</ProjectGuid>
+    <ProjectGuid>{54CCCD7B-8C13-4518-B0A7-47E9EE1F31C7}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>EchoSSL</RootNamespace>
-    <AssemblyName>EchoSSL</AssemblyName>
+    <RootNamespace>ClientSLL</RootNamespace>
+    <AssemblyName>ClientSLL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -42,9 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientSLL.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerSLL.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

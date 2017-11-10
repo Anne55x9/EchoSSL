@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,18 +21,34 @@ namespace EchoSSL
             this.PORT = port;
         }
 
+        
+
         public void StartServer()
         {
+            string serverCertificateASW = "C:/Certificate/ServerSSL.cer";
+            bool clientCertificateRequired = false;
+            bool checkCertificateRevocation = true;
+            SslProtocols enabledSSLProtocols = SslProtocols.Tls;
+            X509Certificate serverCertificate = new X509Certificate(serverCertificateASW, "Kylling123");
+
             TcpListener serverSocket = new TcpListener(IPAddress.Any,PORT);
 
             serverSocket.Start();
 
             Console.WriteLine("Server Started");
 
-            using (TcpClient connectionSocket = serverSocket.AcceptTcpClient())
-            using (Stream ns = connectionSocket.GetStream())
-            using (StreamReader sr = new StreamReader(ns))
-            using (StreamWriter sw = new StreamWriter(ns))
+            TcpClient connectionSocket = serverSocket.AcceptTcpClient();
+
+
+            Stream unsecureStream = connectionSocket.GetStream();
+            bool leaveInnerStreamOpen = false;
+            SslStream secureStream = new SslStream(unsecureStream, leaveInnerStreamOpen);
+            
+            secureStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired, enabledSSLProtocols, checkCertificateRevocation);
+
+            //using (Stream ns = connectionSocket.GetStream())
+            using (StreamReader sr = new StreamReader(secureStream))
+            using (StreamWriter sw = new StreamWriter(secureStream))
             {
                 Console.WriteLine("Server started");
 
@@ -47,8 +66,8 @@ namespace EchoSSL
                     message = sr.ReadLine();
                 }
             }
-   
-            
+
+
         }
     }
 }

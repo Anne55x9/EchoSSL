@@ -20,7 +20,7 @@ namespace ClientSLL
 
         public void StartClient()
         {
-            using (TcpClient connectionSocket = new TcpClient(IPAddress.Loopback.ToString(),PORT))
+            using (TcpClient connectionSocket = new TcpClient("192.168.3.148",PORT))
             using (Stream ns = connectionSocket.GetStream())
             using (StreamReader sr = new StreamReader(ns))
             using (StreamWriter sw = new StreamWriter(ns))

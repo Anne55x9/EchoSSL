@@ -25,48 +25,47 @@ namespace EchoSSL
 
         public void StartServer()
         {
-            string serverCertificateASW = "C:/Certificate/ServerSSL.cer";
-            bool clientCertificateRequired = false;
-            bool checkCertificateRevocation = true;
-            SslProtocols enabledSSLProtocols = SslProtocols.Tls;
-            X509Certificate serverCertificate = new X509Certificate(serverCertificateASW, "Kylling123");
-
-            TcpListener serverSocket = new TcpListener(IPAddress.Any,PORT);
-
+            TcpListener serverSocket = new TcpListener(IPAddress.Loopback, PORT);
             serverSocket.Start();
-
             Console.WriteLine("Server Started");
 
-            TcpClient connectionSocket = serverSocket.AcceptTcpClient();
+            string serverCertificateASW = "C:/Certificates/ServerSSL.pfx";
+            //bool clientCertificateRequired = false;
+            //bool checkCertificateRevocation = true;
+            //SslProtocols enabledSSLProtocols = SslProtocols.Tls;
 
+            X509Certificate serverCertificate = new X509Certificate2(serverCertificateASW, "mysecret");
 
-            Stream unsecureStream = connectionSocket.GetStream();
             bool leaveInnerStreamOpen = false;
-            SslStream secureStream = new SslStream(unsecureStream, leaveInnerStreamOpen);
-            
-            secureStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired, enabledSSLProtocols, checkCertificateRevocation);
 
-            //using (Stream ns = connectionSocket.GetStream())
-            using (StreamReader sr = new StreamReader(secureStream))
-            using (StreamWriter sw = new StreamWriter(secureStream))
+            using (TcpClient connectionSocket = serverSocket.AcceptTcpClient())
+            using (Stream unsecureStream = connectionSocket.GetStream())
+
+            using (SslStream secureStream = new SslStream(unsecureStream, leaveInnerStreamOpen))
             {
-                Console.WriteLine("Server started");
+                secureStream.AuthenticateAsServer(serverCertificate);
 
-                sw.AutoFlush = true;
-
-                string message = sr.ReadLine();
-                string answer = "";
-
-                while (!string.IsNullOrEmpty(message))
+                //using (Stream ns = connectionSocket.GetStream())
+                using (StreamReader sr = new StreamReader(secureStream))
+                using (StreamWriter sw = new StreamWriter(secureStream))
                 {
-                    Console.WriteLine("Client: " + message);
-                    answer = message.ToUpper();
-                    sw.WriteLine(answer);
+                    Console.WriteLine("Server started");
 
-                    message = sr.ReadLine();
+                    sw.AutoFlush = true;
+
+                    string message = sr.ReadLine();
+                    string answer = "";
+
+                    while (!string.IsNullOrEmpty(message))
+                    {
+                        Console.WriteLine("Client: " + message);
+                        answer = message.ToUpper();
+                        sw.WriteLine(answer);
+
+                        message = sr.ReadLine();
+                    }
                 }
             }
-
 
         }
     }

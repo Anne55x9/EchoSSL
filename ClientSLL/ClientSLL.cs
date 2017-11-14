@@ -23,33 +23,42 @@ namespace ClientSLL
 
         public void StartClient()
         {
-            string clientCertificateASW = "C:/Certificate/RootCA.cer";
-            //bool clientCertificateRequired = false;
-            //bool checkCertificateRevocation = true;
-            //SslProtocols enabledSSLProtocols = SslProtocols.Tls;
+            // string clientCertificateASW = "C:/Certificate/ServerSSL.cer";
+            // bool clientCertificateRequired = false;
+            // bool checkCertificateRevocation = true;
+            // SslProtocols enabledSSLProtocols = SslProtocols.Tls;
 
             //X509Certificate ClientCertificate = new X509Certificate(clientCertificateASW, "Kylling123");
 
-            TcpClient connectionSocket = new TcpClient("192.168.3.148", PORT);
+            ////Kør på kaspers IP:
+            //TcpClient connectionSocket = new TcpClient("192.168.3.148", PORT);
+
+            bool leaveInnerStreamOpen = false;
+            ///Kør på min egen IP:
+            using (TcpClient connectionSocket = new TcpClient(IPAddress.Loopback.ToString(), PORT))
+   
                 // using (Stream ns = connectionSocket.GetStream())
 
-            Stream unsecureStream = connectionSocket.GetStream();
-            bool leaveInnerStreamOpen = false;
-            SslStream secureStream = new SslStream(unsecureStream, leaveInnerStreamOpen);
-            secureStream.AuthenticateAsClient(clientCertificateASW);
-
-
-            using (StreamReader sr = new StreamReader(secureStream))
-            using (StreamWriter sw = new StreamWriter(secureStream))
+            using (Stream unsecureStream = connectionSocket.GetStream())
+            using (SslStream secureStream = new SslStream(unsecureStream, leaveInnerStreamOpen))
             {
-                Console.WriteLine("Client have connected");
-                sw.AutoFlush = true;
+               
+                secureStream.AuthenticateAsClient("FakeServerName");
 
-                Client3(sr, sw);
-                //Insert specifik clients
+                using (StreamReader sr = new StreamReader(secureStream))
+                using (StreamWriter sw = new StreamWriter(secureStream))
+                {
+                    Console.WriteLine("Client have connected");
+                    sw.AutoFlush = true;
 
-                Console.WriteLine("Client finished");
+                    Client3(sr, sw);
+                    //Insert specifik clients
+
+                    Console.WriteLine("Client finished");
+                }
             }
+           
+          
         }
 
         //send 100 messages to server
